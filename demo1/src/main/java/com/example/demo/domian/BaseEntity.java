@@ -18,4 +18,5 @@ public class BaseEntity {
 
     private Date updateTime;//修改时间
 
+
 }
