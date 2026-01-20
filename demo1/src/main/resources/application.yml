@@ -44,4 +44,16 @@ mybatis:
     # 是否开启自动驼峰命名
     use-actual-param-name: true
 
+pagehelper:
+  # 分页插件使用的数据库方言, 设置为mysql表示适配mysql的数据库语法
+  helper-dialect: mysql
+  # 分页合理化参数
+  # 配置为true的话: 当pageNum(页码) <1, 会查询第一页; 当pageNum>总页数时, 会查询最后一页
+  reasonable: true
+  # 是否支持接口参数来传递分页参数, 默认值是false
+  # 配置为true的话: 支持通过Mapper接口的参数来传递分页参数
+  support-methods-arguments: true
+  # 配置参数映射
+  params: count=countSql
+
 
