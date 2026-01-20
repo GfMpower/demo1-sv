@@ -3,7 +3,6 @@ package com.example.demo.domian;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
