@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ProductMapper">
+
+    <!--结果映射  前面对应实体类，后面对应数据库-->
+    <resultMap id="ProductResultMap" type="com.example.demo.domian.Product">
+        <id property="id" column="id"/>
+        <id property="name" column="name"/>
+        <id property="categoryId" column="category_id"/>
+        <id property="price" column="price"/>
+        <id property="stock" column="stock"/>
+        <id property="image" column="image"/>
+        <id property="description" column="description"/>
+        <id property="status" column="status"/>
+        <id property="createTime" column="create_time"/>
+        <id property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询所有商品-->
+    <select id="findAll"  resultMap="ProductResultMap">
+        select *
+        from product
+        order by create_time desc
+    </select>
+    <!--根据商品ID查询商品信息-->
+    <select id="findById" resultMap="ProductResultMap">
+        select *
+        from product
+        where id = #{id}
+    </select>
+    <!--根据分类ID查询商品-->
+    <select id="findByCategoryId" parameterType="long" resultMap="ProductResultMap">
+        select *
+        from product
+        where category_id = #{categoryId}
+    </select>
+    <!--插入商品-->
+    <insert id="insert" parameterType="com.example.demo.domian.Product" useGeneratedKeys="true" keyProperty="id">
+        insert into product(name, category_id, price, stock, image, description, status)
+        values(#{name}, #{categoryId}, #{price}, #{stock}, #{image}, #{description}, #{status})
+    </insert>
+    <!--更新商品-->
+    <update id="update" parameterType="com.example.demo.domian.Product" useGeneratedKeys="true">
+        update product
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="stock != null">
+                stock = #{stock},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <!--删除用户-->
+    <delete id="deleteById" parameterType="long">
+        delete from product
+        where id = #{id}
+    </delete>
+</mapper>
