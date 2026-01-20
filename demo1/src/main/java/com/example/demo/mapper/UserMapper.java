@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends com.example.demo.mapper.BaseMapper<User> {
     //查询用户列表
     List<User> findAll();
     //根据用户ID查询用户信息

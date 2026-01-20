@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.OrderMapper">
+
+    <!--结果映射  前面对应实体类，后面对应数据库-->
+    <resultMap id="OrderResultMap" type="com.example.demo.domian.Order">
+        <id property="id" column="id"/>
+        <id property="orderNo" column="order_no"/>
+        <id property="userId" column="user_id"/>
+        <id property="totalAmount" column="total_amount"/>
+        <id property="status" column="status"/>
+        <id property="receiverName" column="receiver_name"/>
+        <id property="receiverPhone" column="receiver_phone"/>
+        <id property="receiverAddress" column="receiver_address"/>
+        <id property="createTime" column="create_time"/>
+        <id property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询所有订单-->
+    <select id="findAll"  resultMap="OrderResultMap">
+        select *
+        from `order`
+        order by create_time desc
+    </select>
+    <!--ID查询订单-->
+    <select id="findById" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where id = #{id}
+    </select>
+    <!--根据商品ID查询商品信息-->
+    <select id="findByOrderNo" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where order_no = #{orderNo}
+    </select>
+    <!--根据分类ID查询商品-->
+        <select id="findByUserId" parameterType="long" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where user_id = #{userId}
+    </select>
+    <!--根据订单总金额查询订单-->
+    <select id="findByTotalAmount" parameterType="decimal" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where total_amount = #{totalAmount}
+    </select>
+    <!--根据订单状态查询订单-->
+    <select id="findByStatus" parameterType="int" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where status = #{status}
+    </select>
+    <!--根据收货人姓名查询订单-->
+    <select id="findByReceiverName" parameterType="string" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where receiver_name = #{receiverName}
+    </select>
+    <!--根据收货人电话查询订单-->
+    <select id="findByReceiverPhone" parameterType="string" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where receiver_phone = #{receiverPhone}
+    </select>
+    <!--根据收货地址查询订单-->
+    <select id="findByReceiverAddress" parameterType="string" resultMap="OrderResultMap">
+        select *
+        from `order`
+        where receiver_address = #{receiverAddress}
+    </select>
+    <!--插入订单-->
+    <insert id="insert" parameterType="com.example.demo.domian.Order" useGeneratedKeys="true" keyProperty="id">
+        insert into `order`(order_no, user_id, total_amount, status, receiver_name, receiver_phone, receiver_address)
+        values(#{orderNo}, #{userId}, #{totalAmount}, #{status}, #{receiverName}, #{receiverPhone}, #{receiverAddress})
+    </insert>
+    <!--更新订单-->
+    <update id="update" parameterType="com.example.demo.domian.Order" useGeneratedKeys="true">
+        update `order`
+        <set>
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="totalAmount != null">
+                total_amount = #{totalAmount},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="receiverName != null">
+                receiver_name = #{receiverName},
+            </if>
+            <if test="receiverPhone != null">
+                receiver_phone = #{receiverPhone},
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address = #{receiverAddress},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <!--删除订单-->
+    <delete id="deleteById" parameterType="long">
+        delete from `order`
+        where id = #{id}
+    </delete>
+</mapper>
