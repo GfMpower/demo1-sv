@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+
+    <!--结果映射  前面对应实体类，后面对应数据库-->
+    <resultMap id="UserResultMap" type="com.example.demo.domian.User">
+        <id property="id" column="id"/>
+        <id property="username" column="username"/>
+        <id property="password" column="password"/>
+        <id property="nickname" column="nickname"/>
+        <id property="email" column="email"/>
+        <id property="phone" column="phone"/>
+        <id property="avatar" column="avatar"/>
+        <id property="status" column="status"/>
+        <id property="createTime" column="create_time"/>
+        <id property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询用户列表-->
+    <select id="findAll"  resultMap="UserResultMap">
+        select *
+        from user
+    </select>
+    <!--根据用户ID查询用户信息-->
+    <select id="findById" resultMap="UserResultMap">
+        select *
+        from user
+        where id = #{id}
+    </select>
+    <!--根据用户名查询用户信息-->
+    <select id="findByUserName" parameterType="string" resultMap="UserResultMap">
+        select *
+        from user
+        where username = #{username}
+    </select>
+    <!--插入用户-->
+    <insert id="insert" parameterType="com.example.demo.domian.User" useGeneratedKeys="true" keyProperty="id">
+        insert into user(username, password, nickname, email, phone, avatar, status)
+        values(#{username}, #{password}, #{nickname}, #{email}, #{phone}, #{avatar}, #{status})
+    </insert>
+    <!--更新用户-->
+    <update id="update" parameterType="com.example.demo.domian.User" useGeneratedKeys="true">
+        update user
+        <set>
+            <if test="username != null and username != ''">
+            username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="avatar != null and avatar != ''">
+                avatar = #{avatar},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <!--删除用户-->
+    <delete id="deleteById" parameterType="long">
+        delete from user
+        where id = #{id}
+    </delete>
+</mapper>

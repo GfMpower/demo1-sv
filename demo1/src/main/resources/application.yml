@@ -1,0 +1,47 @@
+#服务器配置部分
+server:
+  #服务器端口配置，应用将在8080端口启动
+  port: 8080
+  #servelt配置
+  servlet:
+    #应用上下文路径，“/”表示根路径
+    context-path: /
+
+#Spring 配置
+spring:
+  #应用配置
+  application:
+    #应用名称，用于服务发现，监控等配置
+    name: demo
+  #数据库数据源配置
+  datasource:
+    #数据库驱动类
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #数据库链接url
+    #jdbc:mysql://  JDBC链接协议
+    #localhost:3306 数据库地址和端口号
+    #demo 数据库名称
+    #useUnicode=true 使用useUnicode字符集
+    #characterEncoding=utf8 使用utf8字符集
+    #serverTimezone=Asia/Shanghai 设置服务器时区为上海时间
+    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    #数据库用户名
+    username: root
+    #数据库密码
+    password: gaohaobo!liuyifan
+
+#mybatis框架配置
+mybatis:
+  #配置mybatis的mapper文件路径
+  mapper-locations: classpath:mapper/*.xml
+  #类型别名包配置 Mybatis会自动为该包下的实体类注册类型别名，简化xml配置
+  type-aliases-package: com.gaohaobo.domain
+  ##mybatis日志配置
+  configuration:
+    #指定mybatis使用的日志实现类，这里设置为标准输出日志实现
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 数据库字段命名策略映射配置
+    # 是否开启自动驼峰命名
+    use-actual-param-name: true
+
+
