@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.OrderItemMapper">
+
+    <!--结果映射  前面对应实体类，后面对应数据库-->
+    <resultMap id="OrderItemResultMap" type="com.example.demo.domian.OrderItem">
+        <id property="id" column="id"/>
+        <id property="orderId" column="order_id"/>
+        <id property="productId" column="product_id"/>
+        <id property="productName" column="product_name"/>
+        <id property="price" column="price"/>
+        <id property="quantity" column="quantity"/>
+        <id property="subtotal" column="subtotal"/>
+        <id property="createTime" column="create_time"/>
+        <id property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询所有订单项-->
+    <select id="findAll"  resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        order by create_time desc
+    </select>
+    <!--ID查询订单项-->
+    <select id="findById" resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        where id = #{id}
+    </select>
+    <!--根据订单ID查询订单项-->
+    <select id="findByOrderId" parameterType="long" resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        where order_id = #{orderId}
+    </select>
+    <!--根据商品ID查询订单项-->
+    <select id="findByProductId" parameterType="long" resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        where product_id = #{productId}
+    </select>
+    <!--根据商品名称查询订单项-->
+    <select id="findByProductName" parameterType="string" resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        where product_name = #{productName}
+    </select>
+    <!--根据商品价格查询订单项-->
+    <select id="findByPrice" parameterType="decimal" resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        where price = #{price}
+    </select>
+    <!--根据购买数量查询订单项-->
+    <select id="findByQuantity" parameterType="int" resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        where quantity = #{quantity}
+    </select>
+    <!--根据小计查询订单项-->
+    <select id="findBySubtotal" parameterType="decimal" resultMap="OrderItemResultMap">
+        select *
+        from `order_item`
+        where subtotal = #{subtotal}
+    </select>
+    <!--插入订单项-->
+    <insert id="insert" parameterType="com.example.demo.domian.OrderItem" useGeneratedKeys="true" keyProperty="id">
+            insert into `order_item`(order_id, product_id, product_name, price, quantity, subtotal)
+            values(#{orderId}, #{productId}, #{productName}, #{price}, #{quantity}, #{subtotal})
+    </insert>
+    <!--更新订单-->
+    <update id="update" parameterType="com.example.demo.domian.Order" useGeneratedKeys="true">
+        update `order_item`
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId},
+            </if>
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+            <if test="productName != null">
+                product_name = #{productName},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+            <if test="subtotal != null">
+                subtotal = #{subtotal},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <!--删除订单-->
+    <delete id="deleteById" parameterType="long">
+        delete from `order_item`
+        where id = #{id}
+    </delete>
+    <!--根据订单ID删除订单项-->
+    <delete id="deleteByOrderId" parameterType="long">
+        delete from `order_item`
+        where orderId = #{orderId}
+    </delete>
+    <!--根据商品ID删除订单项-->
+    <delete id="deleteByProductId" parameterType="long">
+        delete from `order_item`
+        where productId = #{productId}
+    </delete>
+    <!--根据商品名称删除订单项-->
+    <delete id="deleteByProductName" parameterType="string">
+        delete from `order_item`
+        where productName = #{productName}
+    </delete>
+</mapper>
