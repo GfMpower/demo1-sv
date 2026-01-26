@@ -20,4 +20,10 @@ public interface UserMapper extends com.example.demo.mapper.BaseMapper<User> {
     Boolean update(User user);
     //删除用户
     Boolean deleteById(Long id);
+    //检查用户名是否已存在
+    Boolean isUsernameExists(String username);
+    //检查邮箱是否已存在
+    Boolean isEmailExists(String email);
+    //检查手机号是否已存在
+    Boolean isPhoneExists(String phone);
 }
