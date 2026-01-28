@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.domian.User;
+import com.example.demo.domian.dto.UserLoginDTO;
 import com.example.demo.domian.dto.UserRegisterDTO;
+import com.example.demo.domian.vo.LoginVo;
 
 
 import java.util.List;
@@ -26,6 +28,8 @@ public interface UserService {
     Boolean deleteById(Long id);
     //用户注册
     Boolean register(UserRegisterDTO userRegisterDTO);
+    //用户登录
+    LoginVo login(UserLoginDTO userLoginDTO);
     //检查用户名是否已存在
     Boolean isUsernameExists(String username);
     //检查邮箱是否已存在

@@ -1,10 +1,13 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.domian.User;
+import com.example.demo.domian.dto.UserLoginDTO;
 import com.example.demo.domian.dto.UserRegisterDTO;
+import com.example.demo.domian.vo.LoginVo;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.BusinessException;
+import com.example.demo.utils.JwtUtil;
 import com.example.demo.utils.PasswordEncoderUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +96,39 @@ public class UserServiceImpl implements UserService {
         //7. 插入数据库
         return userMapper.insert(user);
     }
+
+    //用户登录
+    @Override
+    public LoginVo login(UserLoginDTO userLoginDTO) {
+        //1.根据用户名查找用户
+        User user = userMapper.findByUserName(userLoginDTO.getUsername());
+        if (user == null) {
+            throw new BusinessException("用户名错误");
+        }
+
+        //2.验证密码
+        if (!PasswordEncoderUtil.matches(userLoginDTO.getPassword(), user.getPassword())) {
+            throw new BusinessException("密码错误");
+        }
+
+        //3.检查用户状态
+        if (user.getStatus() == 0) {
+            throw new BusinessException("用户已被禁用");
+        }
+
+        //4. 生成JWT令牌
+        String token = JwtUtil.generateToken(user.getId(), user.getUsername());
+
+        //5. 构造返回对象
+        LoginVo loginVo = new LoginVo();
+        loginVo.setToken(token);
+        loginVo.setUserId(user.getId());
+        loginVo.setUsername(user.getUsername());
+        loginVo.setNickname(user.getNickname());
+
+        return loginVo;
+    }
+
     //检查用户名是否已存在
     @Override
     public Boolean isUsernameExists(String username) {

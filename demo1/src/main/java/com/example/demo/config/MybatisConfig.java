@@ -2,8 +2,10 @@ package com.example.demo.config;
 
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /*
 * Mybatis配置类
 * 用于配置和初始化 mybatis 框架在Spring Boot中的运行环境
@@ -12,5 +14,21 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @MapperScan("com.example.demo.mapper")
-public class MybatisConfig {
+public class MybatisConfig implements WebMvcConfigurer {
+    @Autowired
+    private JwtInterceptor jwtInterceptor; //注入JWT拦截器
+
+    /**
+     * 添加拦截器配置
+     * @param registry 拦截器注册器
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        //注册JWT拦截器, 配置拦截规则
+        registry.addInterceptor(jwtInterceptor)
+                //拦截所有以/api开头的请求路径
+                .addPathPatterns("/api/**")
+                //排除登录和注册接口
+                .excludePathPatterns("/api/auth/login", "/api/auth/register");
+    }
 }

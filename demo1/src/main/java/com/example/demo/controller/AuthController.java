@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.domian.dto.UserLoginDTO;
 import com.example.demo.domian.dto.UserRegisterDTO;
+import com.example.demo.domian.vo.LoginVo;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,15 @@ public class AuthController {
             }
         } catch (Exception e) {
             //捕获异常并返回错误信息(如用户名已存在)
+            return Result.error(e.getMessage());
+        }
+    }
+    @PostMapping("/login")
+    public Result<LoginVo> register(@RequestBody UserLoginDTO userLoginDTO) {
+        try {
+            LoginVo loginVo = userService.login(userLoginDTO);
+            return Result.success("登录成功", loginVo);
+        } catch (Exception e) {
             return Result.error(e.getMessage());
         }
     }
