@@ -1,15 +1,10 @@
-package com.example.demo.domian;
+package com.example.demo.domian.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.util.List;
-
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class Category extends BaseEntity{
-    private static final long serialVersionUID = 1L;
-
+public class CategoryUpdateDTO {
+    private Long id;//分类ID
     private String name; //分类名称
     private Long parentId; //父分类ID
     private Integer level; //分类层级
@@ -17,6 +12,4 @@ public class Category extends BaseEntity{
     private String icon; //图标
     private String description; //描述
     private Integer status; //状态 0-禁用 1-正常
-
-    private List<Category> children; //子分类列表
 }
