@@ -41,7 +41,7 @@
         values(#{username}, #{password}, #{nickname}, #{email}, #{phone}, #{avatar}, #{status})
     </insert>
     <!--更新用户-->
-    <update id="update" parameterType="com.example.demo.domian.User" useGeneratedKeys="true">
+        <update id="update" parameterType="com.example.demo.domian.User" useGeneratedKeys="true">
         update user
         <set>
             <if test="username != null and username != ''">
@@ -68,6 +68,7 @@
         </set>
         where id = #{id}
     </update>
+
     <!--删除用户-->
     <delete id="deleteById" parameterType="long">
         delete from user

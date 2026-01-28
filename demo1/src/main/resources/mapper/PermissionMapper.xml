@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PermissionMapper">
+    <!--结果映射  前面对应实体类，后面对应数据库-->
+    <resultMap id="PermissionResultMap" type="com.example.demo.domian.Permission">
+        <id property="id" column="id"/>
+        <id property="name" column="name"/>
+        <id property="code" column="code"/>
+        <id property="type" column="type"/>
+        <id property="parentId" column="parent_id"/>
+        <id property="path" column="path"/>
+        <id property="component" column="component"/>
+        <id property="icon" column="icon"/>
+        <id property="sort" column="sort"/>
+        <id property="status" column="status"/>
+        <id property="createTime" column="create_time"/>
+        <id property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--根角色ID查询权限列表-->
+    <select id="findPermissionByRoleId" parameterType="long" resultMap="PermissionResultMap">
+        select * from permission p
+        inner join role_permission rp
+            on p.id = rp.permission_id
+        inner join user_role ur
+            on rp.role_id =ur.role_id
+        where ur.user_id = #{userId}  and p.status = 1
+    </select>
+
+    <!--根据用户ID查询权限列表-->
+    <select id="findPermissionByUserId" parameterType="long" resultMap="PermissionResultMap">
+        select *
+        from permission p
+        inner join role_permission rp
+            on p.id = rp.permission_id
+        inner join user_role ur
+            on rp.role_id = ur.role_id
+        where ur.user_id = #{userId} and p.status = 1
+    </select>
+
+    <!--根据权限编码查询权限信息-->
+    <select id="findByCode" resultType="com.example.demo.domian.Permission">
+        select * from permission
+        where code = #{code} and status = 1
+    </select>
+
+</mapper>

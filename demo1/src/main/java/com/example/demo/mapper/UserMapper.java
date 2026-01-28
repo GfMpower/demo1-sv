@@ -1,6 +1,8 @@
 package com.example.demo.mapper;
 
 import com.example.demo.domian.User;
+import com.example.demo.domian.dto.UserLoginDTO;
+import com.example.demo.domian.vo.LoginVo;
 import org.apache.ibatis.annotations.Mapper;
 
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.RoleMapper">
+    <!--结果映射  前面对应实体类，后面对应数据库-->
+    <resultMap id="RoleResultMap" type="com.example.demo.domian.Role">
+        <id property="id" column="id"/>
+        <id property="name" column="name"/>
+        <id property="code" column="code"/>
+        <id property="description" column="description"/>
+        <id property="status" column="status"/>
+        <id property="createTime" column="create_time"/>
+        <id property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--根据用户id查询角色信息-->
+    <select id="findRolesByUserId" parameterType="long" resultMap="RoleResultMap">
+        select *
+        from role r
+        inner join user_role ur on r.id = ur.role_id
+        where ur.user_id = #{userId} and r.status = 1
+    </select>
+
+    <!--根据角色id查询角色信息-->
+    <select id="findById" parameterType="long" resultMap="RoleResultMap">
+        select *
+        from role
+        where id = #{id} and status = 1
+    </select>
+
+</mapper>

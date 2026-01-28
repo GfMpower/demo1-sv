@@ -36,4 +36,7 @@ public interface UserService {
     Boolean isEmailExists(String email);
     //检查手机号是否已存在
     Boolean isPhoneExists(String phone);
+    //根据用户ID查询用户信息 (包含角色信息)
+    User findUserWithRolesById(Long userId);
+
 }

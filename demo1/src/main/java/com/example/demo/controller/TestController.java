@@ -1,13 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.domian.Category;
-import com.example.demo.domian.Order;
-import com.example.demo.domian.OrderItem;
-import com.example.demo.domian.Product;
-import com.example.demo.service.CategoryService;
-import com.example.demo.service.OrderItemService;
-import com.example.demo.service.OrderService;
-import com.example.demo.service.ProductService;
+import com.example.demo.config.RequiresPermissions;
+import com.example.demo.domian.*;
+import com.example.demo.service.*;
 import com.example.demo.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +22,8 @@ public class TestController {
     private OrderService orderService;
     @Autowired
     private OrderItemService orderItemService;
+    @Autowired
+    private UserService userService;
     //查询所有分类
     @GetMapping("/categoryAll")
     public Result<List<Category>> getCategoryAll() {
@@ -50,5 +47,13 @@ public class TestController {
     public Result<List<OrderItem>> getOrderItemAll() {
         List<OrderItem> orderItemList = orderItemService.findAll();
         return Result.success(orderItemList);
+    }
+
+    //查询用户列表
+    @GetMapping("/selectUserList")
+    @RequiresPermissions("sys:user:list")
+    public Result<List<User>> selectUserList() {
+        List<User> userList = userService.findAll();
+        return Result.success(userList);
     }
 }

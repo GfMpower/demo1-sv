@@ -4,6 +4,7 @@ import com.example.demo.domian.User;
 import com.example.demo.domian.dto.UserLoginDTO;
 import com.example.demo.domian.dto.UserRegisterDTO;
 import com.example.demo.domian.vo.LoginVo;
+import com.example.demo.mapper.RoleMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.BusinessException;
@@ -25,12 +26,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RoleMapper roleMapper;
     //查询用户列表
     @Override
     public List<User> findAll() {
         return userMapper.findAll();
     }
-    //根据id查询用户
+    //根据用户id查询用户
     @Override
     public User findById(Long id) {
         return userMapper.findById(id);
@@ -143,6 +146,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean isPhoneExists(String phone) {
         return userMapper.isPhoneExists(phone);
+    }
+
+    //根据用户ID查询用户信息 (包含角色信息)
+    @Override
+    public User findUserWithRolesById(Long userId) {
+        User user = userMapper.findById(userId);
+        if (user != null) {
+            //查询用户的角色列表
+            user.setRoles(roleMapper.findRolesByUserId(userId));
+        }
+        return user;
     }
 
 }

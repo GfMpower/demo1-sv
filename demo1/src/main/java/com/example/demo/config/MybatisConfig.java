@@ -17,6 +17,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class MybatisConfig implements WebMvcConfigurer {
     @Autowired
     private JwtInterceptor jwtInterceptor; //注入JWT拦截器
+    @Autowired
+    private PermissionInterceptor permissionInterceptor; //注入权限拦截器
 
     /**
      * 添加拦截器配置
@@ -30,5 +32,10 @@ public class MybatisConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/**")
                 //排除登录和注册接口
                 .excludePathPatterns("/api/auth/login", "/api/auth/register");
+        //注册权限拦截器, 配置拦截规则
+        registry.addInterceptor(permissionInterceptor)
+                //拦截所有api接口路径吗
+                //注意: 拦截器执行顺序按照注册顺序, JWT拦截器先执行, 权限拦截器后执行
+                .addPathPatterns("/api/**");
     }
 }
