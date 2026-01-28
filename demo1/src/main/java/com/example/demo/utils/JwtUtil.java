@@ -1,24 +1,47 @@
 package com.example.demo.utils;
 
 
+import com.example.demo.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * JWT工具类
+ * 用于生成 解析和验证JSON Web Token
+ */
 @Component
 public class JwtUtil {
+    private static JwtConfig jwtConfig ;
+
     //JWT密钥
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    //JWT过期时间(毫秒), 这里设置为24小时
-    private static final long EXPIRATION = 24 * 60 * 60 * 1000;
+    private static SecretKey secretKey;
+
+    @Autowired
+    public JwtUtil(JwtConfig jwtConfig) {
+        JwtUtil.jwtConfig = jwtConfig;
+    }
+
+    //初始化密钥
+    private static SecretKey getSecretKey() {
+        if (secretKey == null) {
+            secretKey = Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8));
+        }
+        return secretKey;
+    }
+//    //JWT密钥
+//    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+//    //JWT过期时间(毫秒), 这里设置为24小时
+//    private static final long EXPIRATION = 24 * 60 * 60 * 1000;
 
     /**
      * 生成JWT令牌
@@ -29,19 +52,22 @@ public class JwtUtil {
     public static String generateToken(Long userId,String  username){
         // 获取当前时间
         Date now =new Date();
+
         //计算过期时间
-        Date expriyDate = new Date(now.getTime() + EXPIRATION);
+        Date expriyDate = new Date(now.getTime() + jwtConfig.getExpiration() * 1000);
+
         //创建JWT声明（payload）
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("username", username);
+
         // 构建JWT并返回字符串
         return Jwts.builder()
                 .setClaims(claims) //设置声明
                 .setSubject(username)//
                 .setIssuedAt(now) //设置签发时间
                 .setExpiration(expriyDate) //设置过期时间
-                .signWith(SECRET_KEY) //设置密钥
+                .signWith(getSecretKey(), SignatureAlgorithm.HS512) //设置密钥
                 .compact();//生成令牌字符串
     }
 
@@ -52,7 +78,7 @@ public class JwtUtil {
      */
     public static Claims parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY) //设置签名密钥
+                .setSigningKey(getSecretKey()) //设置签名密钥
                 .build()
                 .parseClaimsJws(token)//解析令牌
                 .getBody(); //获取声明体
@@ -67,7 +93,7 @@ public class JwtUtil {
         try {
             //尝试解析令牌, 如果解析成功则说明令牌有效
             Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY) //设置签名密钥
+                    .setSigningKey(getSecretKey()) //设置签名密钥
                     .build()
                     .parseClaimsJws(token); //解析令牌
             return true;
@@ -81,7 +107,7 @@ public class JwtUtil {
      * @param token
      * @return
      */
-    public static Long getUserId(String token){
+    public static Long getUserIdFromToken(String token){
         Claims claims = parseToken(token);
         //从声明中获取userId
         return Long.parseLong(claims.get("userId").toString());
@@ -92,9 +118,47 @@ public class JwtUtil {
      * @param token
      * @return
      */
-    public static String getUsername(String token){
+    public static String getUserNameFromToken(String token){
         Claims claims = parseToken(token);
         //从声明中获取userName
         return claims.get("username").toString();
     }
+
+    /**
+     * 刷新JWT令牌
+     * @param token 原始令牌
+     * @return 新的JWT令牌
+     */
+    public String refreshToken(String token) {
+        //解析原始令牌获取负载信息
+        Claims claims = parseToken(token);
+        //从负载中提取用户ID
+        Long userId = Long.valueOf(claims.get("userId").toString());
+        //从负载中提取用户名
+        String username = claims.get("username").toString();
+        //生成并返回新的JWT令牌
+        return generateToken(userId, username);
+    }
+    /**
+     * 检查令牌是否即将过期
+     * @param token JWT令牌
+     * @return 是否即将过期 (剩余时间少于1小时)
+     */
+    public Boolean isTokenExpiringSoon(String token) {
+        try {
+            //解析原始令牌获取负载信息
+            Claims claims = parseToken(token);
+            //获取令牌的过期时间
+            Date expiration = claims.getExpiration();
+            //获取当前时间
+            Date now = new Date();
+            //计算剩余时间(毫秒), 如果少于1小时(3600000毫秒)则视为即将过期
+            return (expiration.getTime() - now.getTime()) <3600000;
+        } catch (Exception e) {
+            //解析异常时默认返回true, 视为令牌已经失效或者过期
+            return true;
+        }
+    }
+
+
 }

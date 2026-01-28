@@ -56,4 +56,9 @@ pagehelper:
   # 配置参数映射
   params: count=countSql
 
+jwt:
+  secret: mySecretKey123456789012345678901234567890123456789012345678901234567890
+  expiration: 86400
+  header: Authorization
+
 

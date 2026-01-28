@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import com.example.demo.utils.JwtUtil;
 import com.example.demo.utils.Result;
+import com.example.demo.utils.UserContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -9,7 +10,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-
+/**
+ * JWT拦截器
+ * 用于验证请求中的JWT令牌有效性
+ */
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
     //JSON序列化工具
@@ -42,7 +46,11 @@ public class JwtInterceptor implements HandlerInterceptor {
 
             //验证token有效性
             if (JwtUtil.validateToken(token)) {
-                //如果token有效 放行
+                //如果token有效, 设置用户上下文
+                Long userId = JwtUtil.getUserIdFromToken(token);
+                String username = JwtUtil.getUserNameFromToken(token);
+                UserContext.setUserId(userId);
+                UserContext.setUsername(username);
                 return true;
             }
         }

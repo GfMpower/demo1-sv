@@ -6,9 +6,7 @@ package com.example.demo.controller;
 
 import com.example.demo.domian.User;
 import com.example.demo.service.UserService;
-import com.example.demo.utils.PageUtils;
-import com.example.demo.utils.Result;
-import com.example.demo.utils.ResultCode;
+import com.example.demo.utils.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+
     //查询用户列表
     @GetMapping
     public Result<List<User>> getfindAll() {
@@ -39,7 +39,7 @@ public class UserController {
             return Result.error(ResultCode.USER_NOT_EXIST);//用户不存在
         }
     }
-
+    //分页查询
     @GetMapping("/page" )
     public Result<Map<String,Object>> getfindByPage(@RequestParam(defaultValue = "1") int pageNum,
                                              @RequestParam(defaultValue = "10") int pageSize) {
@@ -49,6 +49,20 @@ public class UserController {
         Map<String, Object> pageResult = PageUtils.toPageResult(pageInfo);
         return Result.success(pageResult);
     }
+
+    //获取当前用户信息
+    @GetMapping("/info")
+    public Result<User> getCurrentUserInfo(){
+        Long userId = UserContext.getUserId();
+        if (userId != null){
+            User user = userService.findById(userId);
+            if (user != null){
+                return Result.success(user);
+            }
+        }
+        return Result.error(ResultCode.USER_NOT_EXIST);
+    }
+
 
 
 }

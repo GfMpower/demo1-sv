@@ -4,18 +4,19 @@ import com.example.demo.domian.dto.UserLoginDTO;
 import com.example.demo.domian.dto.UserRegisterDTO;
 import com.example.demo.domian.vo.LoginVo;
 import com.example.demo.service.UserService;
+import com.example.demo.utils.JwtUtil;
 import com.example.demo.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private JwtUtil jwtUtil;
+
 
     /**
      * 用户注册
@@ -46,6 +47,32 @@ public class AuthController {
             return Result.success("登录成功", loginVo);
         } catch (Exception e) {
             return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 刷新token
+     */
+    @PostMapping("/refresh")
+    public Result<String> refreshToken(@RequestHeader("Authorization") String token) {
+        try{
+            //检查token是否存在并且格式正确
+            if (token != null && token.startsWith("Bearer")){
+                //去除前缀，获取实际token
+                token = token.substring(7);
+                //验证原始token是否有效
+                if (JwtUtil.validateToken(token)){
+                    //生成新的token
+                    String newToken = jwtUtil.refreshToken(token);
+                    //返回刷新成功的响应
+                    return Result.success("Token刷新成功", newToken);
+                }
+            }
+            //Token无效或者合适不对
+            return Result.error("Token无效");
+        }catch (Exception e){
+            //处理刷新过程中出现的异常
+            return Result.error("Token刷新失败" + e.getMessage());
         }
     }
 }
