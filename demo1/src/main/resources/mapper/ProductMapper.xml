@@ -36,6 +36,38 @@
         from product
         where category_id = #{categoryId}
     </select>
+    <!--分页查询商品-->
+    <select id="findPage" resultMap="ProductResultMap">
+        select * , c.name as categoryName
+        from product p
+        left join category c on p.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                and p.name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and p.category_id like concat('%', #{categoryId}, '%')
+            </if>
+        </where>
+        order by p.create_time desc
+    </select>
+
+    <!--查询商品总数-->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from product p
+        <where>
+            <if test="name != null and name != ''">
+                and p.name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and p.category_id like concat('%', #{categoryId}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+
     <!--插入商品-->
     <insert id="insert" parameterType="com.example.demo.domian.Product" useGeneratedKeys="true" keyProperty="id">
         insert into product(name, category_id, price, stock, image, description, status)
