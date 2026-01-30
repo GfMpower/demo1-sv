@@ -1,15 +1,12 @@
-package com.example.demo.domian;
+package com.example.demo.domian.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class Order extends BaseEntity{
-    private static final long serialVersionUID = 1L;
+public class OrderUpdateDTO {
+    private Long id;//订单ID
     private String orderNo; // 订单编号
     private Long userId; // 用户ID
     private BigDecimal totalAmount; // 总金额
@@ -17,8 +14,4 @@ public class Order extends BaseEntity{
     private String receiverName; // 收货人人姓名
     private String receiverPhone; // 收货人电话
     private String receiverAddress; // 收货地址
-
-    private List<OrderItem> orderItems; //订单项列表
-    private String nickname; //用户昵称
-    private String statusDesc; //状态描述
 }
