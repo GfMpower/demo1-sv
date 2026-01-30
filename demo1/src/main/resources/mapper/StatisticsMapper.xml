@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.StatisticsMapper">
+    <!--获取总销售额-->
+    <select id="getTotalSales" resultType="java.lang.Double">
+        select coalesce(sum(total_amount), 0) from `order`
+        where status &gt;= 2
+    </select>
+    <!--获取总订单数-->
+    <select id="getTotalOrders" resultType="java.lang.Integer">
+        select count(*)
+        from `order`
+        where status &gt;= 2
+    </select>
+    <!--获取总用户数-->
+    <select id="getTotalUsers" resultType="java.lang.Integer">
+        select count(*) from user
+    </select>
+    <!--根据日期获取总用户数-->
+    <select id="getTotalUsersByDate" resultType="java.lang.Integer">
+        select count(*)
+        from user
+        where create_time &lt; #{date}
+    </select>
+    <!--获取指定日期范围内的日销售记录-->
+    <select id="getDailySalesStatistics"
+            resultType="com.example.demo.domian.vo.SalesStatisticsVO$DailySalesVO">
+        select date(create_time) as date,
+            coalesce(sum(total_amount), 0) as sales,
+            count(*) as orders
+        from `order`
+        where status &gt;=2
+        and create_time &gt; #{startDate}
+        and create_time &lt; #{endDate}
+        group by date(create_time)
+        order by `date`
+    </select>
+    <!--获取指定年份的月销售统计-->
+    <select id="getMonthSalesStatistics"
+            resultType="com.example.demo.domian.vo.SalesStatisticsVO$MonthSalesVO">
+        select date_format(create_time, '%Y-%m') as month,
+            coalesce(sum(total_amount), 0) as sales,
+            count(*) as orders
+        from `order`
+        where year(create_time) = #{year}
+        group by date_format(create_time, '%Y-%m')
+        order by `month`
+    </select>
+    <!--获取指定日期范围内的新增用户数-->
+    <select id="getNewUsers" resultType="java.lang.Integer">
+        select count(*)
+        from user
+        where create_time &gt;= #{startDate}
+        and create_time &lt;= #{endDate}
+    </select>
+    <!--获取指定日期范围内的日用户增长统计-->
+    <select id="getDailyUserSalesStatistics"
+            resultType="com.example.demo.domian.vo.UserStatisticsVO$DailyUserGrowthVO">
+        select date(create_time) as date,
+            count(*) as new_users
+        from user
+        where create_time &gt;= #{startDate}
+        and create_time &lt;= #{endDate}
+        group by date(create_time)
+        order by `date`
+    </select>
+    <!--获取指定年份的日用户增长统计-->
+    <select id="getMonthlyUserSalesStatistics"
+            resultType="com.example.demo.domian.vo.UserStatisticsVO$MonthUserGrowthVO">
+        select date_format(create_time, '%Y-%m') as month,
+            count(*) as new_users
+        from user
+        where year(create_time) = #{year}
+        group by date_format(create_time, '%Y-%m')
+        order by `month`
+    </select>
+    <!--获取分类销售统计-->
+    <select id="getCategorySalesStatistics"
+            resultType="com.example.demo.domian.vo.CategoryStatisticsVo$CategorySalesVO">
+        select c.name as categoryName,
+               coalesce(sum(total_amount), 0) as sales
+        from category c
+                 left join product p on c.id = p.category_id
+                 left join order_item oi on p.id = oi.product_id
+                 left join `order` o on oi.order_id = o.id
+            and o.status &gt;= 2
+        where c.status = 1
+        group by c.id, c.name
+        order by sales
+    </select>
+    <!--获取分类商品数量统计-->
+    <select id="getCategoryProductStatistics"
+            resultType="com.example.demo.domian.vo.CategoryStatisticsVo$CategoryProductVO">
+        select c.name as categoryName,
+               count(p.id) as productCount
+        from category c
+                 left join product p on c.id = p.category_id
+        where c.status = 1
+        group by c.id, c.name
+        order by productCount desc
+    </select>
+    <!--获取最早的订单时间-->
+    <select id="getEarliestOrderTime" resultType="java.util.Date">
+        select min(create_time)
+        from `order`
+    </select>
+
+
+</mapper>
