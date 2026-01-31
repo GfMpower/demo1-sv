@@ -13,7 +13,7 @@
         <el-card>
           <div>
             <h2>欢迎使用后台管理系统</h2>
-            <el-button type="success" @click="testCors">测试跨域</el-button>
+
           </div>
         </el-card>
       </el-main>
@@ -22,12 +22,8 @@
 </template>
 
 <script setup>
-const testCors = () => {
-  fetch('http://localhost:8080/api/users').then(res => res.json())
-      .then(data => {
-        console.log(data, 'daadadsadsasd')
-      })
-}
+
+import {Link, Plus} from "@element-plus/icons-vue";
 </script>
 
 <style scoped>
