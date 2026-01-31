@@ -1,10 +1,13 @@
 <template>
-  <Layout/>
+<div>数据统计</div>
 </template>
 
+
 <script setup>
-import Layout from "@/componments/layout/Layout.vue";
+
 </script>
+
+
 
 <style scoped>
 

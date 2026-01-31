@@ -1,10 +1,12 @@
 <template>
-  <Layout/>
+  <div>用户编辑</div>
 </template>
 
 <script setup>
-import Layout from "@/componments/layout/Layout.vue";
+
 </script>
+
+
 
 <style scoped>
 

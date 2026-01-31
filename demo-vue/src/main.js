@@ -12,7 +12,12 @@ import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 //导入自定义主题色
 import '@/assets/styles/element-variables.scss'
+//导入Pinia状态管理库
+import { createPinia } from 'pinia'
 
+
+//创建Pinia实例
+const pinia = createPinia()
 //使用根组件App创建Vue应用程序
 const app = createApp(App)
 //使用路由插件
@@ -23,5 +28,8 @@ app.use(ElementPlus)
 app.use(ElementPlus, {
     locale: zhCn,
 })
+
+//使用pinia
+app.use(pinia)
 //挂载应用程序到http中id为app的DOM元素上
 app.mount('#app')
