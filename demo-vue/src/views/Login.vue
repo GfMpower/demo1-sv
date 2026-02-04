@@ -1,96 +1,207 @@
 <template>
   <div class="login-container">
-    <el-card class="login-card">
-      <div slot="header" class="login-header">
-        <span>后台管理系统登录</span>
+    <div class="login-box">
+      <div class="login-header">
+        <h2 class="login-title">后台管理系统</h2>
       </div>
-      <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="loginForm.username" placeholder="请输入用户名"></el-input>
+
+      <el-form
+          :model="loginForm"
+          :rules="loginRules"
+          ref="loginFormRef"
+          class="login-form"
+          @keyup.enter="handleLogin"
+      >
+        <el-form-item prop="username">
+          <el-input
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+              prefix-icon="el-icon-user"
+              size="large"
+              clearable
+          />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"></el-input>
+
+        <el-form-item prop="password">
+          <el-input
+              v-model="loginForm.password"
+              type="password"
+              placeholder="请输入密码"
+              prefix-icon="el-icon-lock"
+              size="large"
+              show-password
+          />
         </el-form-item>
+
         <el-form-item>
-          <el-button type="primary" @click="handleLogin" :loading="loading">登录</el-button>
+          <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button
+              type="primary"
+              :loading="loading"
+              @click="handleLogin"
+              size="large"
+              class="login-button"
+              block
+          >
+            {{ loading ? '登录中...' : '登录' }}
+          </el-button>
         </el-form-item>
       </el-form>
-    </el-card>
+    </div>
   </div>
 </template>
 
 <script setup>
-import {reactive, ref} from "vue";
-import router from "@/router/index.js";
-import {useUserStore} from "@/store/user.js";
-import userApi from '@/api/user.js'
-import authApi from '@/api/auth.js'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/user'
+import authApi from '@/api/auth'
+import userApi from '@/api/user'
 
+// 使用 store
 const userStore = useUserStore()
+const router = useRouter()
+const loginFormRef = ref(null)
 
-// 响应式表单数据
+// 表单数据
 const loginForm = reactive({
-  username: '',
-  password: ''
-});
+  username: 'admin',
+  password: '123456',
+  captcha: ''
+})
 
 // 表单验证规则
-const loginRules = reactive({
+const loginRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 4, max: 20, message: '用户名长度为4-20个字符', trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 3, max: 20, message: '密码长度为3-20个字符', trigger: 'blur' }
+  ],
+  captcha: [
+    { required: true, message: '请输入验证码', trigger: 'blur' }
   ]
-});
+}
 
-// 模板引用（替代this.$refs）
-const loginFormRef = ref(null);
-
-// 加载状态
+// 响应式状态
 const loading = ref(false)
+const rememberMe = ref(false)
 
-// 登录方法
+// 处理登录
 const handleLogin = () => {
-  loginFormRef.value?.validate(async (valid) => {
+  loginFormRef.value.validate(async (valid) => {
     if (valid) {
       loading.value = true
       try {
-        const res = await authApi.login(loginForm);
-        userStore.setToken(res.data.token)
-        //获取用户信息
-        const userInfoRes = await userApi.getCurrentUserInfo();
-        userStore.setUserInfo(userInfoRes.data)
+        // 调用登录API
+        const response = await authApi.login({
+          username: loginForm.username,
+          password: loginForm.password
+        })
+
+        // 保存Token
+        userStore.setToken(response.data.token)
+
+        // 获取用户信息
+        const userInfoResponse = await userApi.getCurrentUserInfo()
+        userStore.setUserInfo(userInfoResponse.data)
+
+        // 记住密码
+        if (rememberMe.value) {
+          localStorage.setItem('rememberedUser', JSON.stringify({
+            username: loginForm.username,
+            password: loginForm.password
+          }))
+        } else {
+          localStorage.removeItem('rememberedUser')
+        }
+
+        // 显示成功消息
+        ElMessage.success('登录成功')
+
+        // 跳转到首页
         await router.push('/')
       } catch (error) {
         loading.value = false
-        console.error('登录失败:', error)
       } finally {
         loading.value = false
       }
     }
-  });
-};</script>
+  })
+}
+
+// 页面加载时检查是否记住密码
+onMounted(() => {
+  const rememberedUser = localStorage.getItem('rememberedUser')
+  if (rememberedUser) {
+    try {
+      const user = JSON.parse(rememberedUser)
+      loginForm.username = user.username
+      loginForm.password = user.password
+      rememberMe.value = true
+    } catch (e) {
+      console.error('解析记住的用户信息失败:', e)
+    }
+  }
+})
+</script>
 
 <style scoped>
-/* 登录容器样式 */
 .login-container {
-  display: flex;           /* 使用Flex布局 */
-  justify-content: center; /* 水平居中 */
-  align-items: center;     /* 垂直居中 */
-  height: 100vh;           /* 高度为整个视口高度 */
-  background-color: #f0f2f5; /* 浅灰色背景，常见于登录页面 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* 登录卡片样式  */
-.login-card {
-  width: 400px;           /* 固定宽度 */
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
 
-/* 登录标题样式 */
 .login-header {
-  text-align: center;     /* 文本居中 */
-  font-size: 18px;        /* 字体大小 */
-  font-weight: bold;      /* 字体加粗 */
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-logo {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 15px;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+  font-weight: 600;
+}
+
+.login-form {
+  margin-bottom: 20px;
+}
+
+.login-button {
+  margin-top: 10px;
+}
+
+:deep(.el-input__wrapper) {
+  border-radius: 6px;
+}
+
+:deep(.el-button) {
+  border-radius: 6px;
 }
 </style>

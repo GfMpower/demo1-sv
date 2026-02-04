@@ -9,6 +9,7 @@ import CategoryList from "@/views/categorys/CategoryList.vue";
 import ProductList from "@/views/products/ProductList.vue";
 import OrderList from "@/views/orders/OrderList.vue";
 import login from "@/views/Login.vue";
+import {getToken} from "@/utils/auth.js";
 
 //定义路由配置数组
 const routes = [
@@ -17,7 +18,7 @@ const routes = [
     name: 'home', //路由名称: home
     component: HomeView, //对应的组件: HomeView(直接导入)
     redirect: '/statistics', //默认重定向到数据统计页面
-    children: [
+    children: [ //嵌套路由, 这些路由将显示在Home组件的<router-view/>中
       {
         path : '/statistics',
         name: 'statistics',
@@ -91,7 +92,7 @@ router.beforeEach((to, from, next) => {
   // 检查目标路由是否需要认证
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   // 从本地存储获取token
-  const token = localStorage.getItem('token')
+  const token = getToken()
 
   if (requiresAuth && !token) {
     // 需要认证但没有token，跳转到登录页

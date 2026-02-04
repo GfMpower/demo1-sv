@@ -18,7 +18,7 @@ service.interceptors.request.use(
         //检查用户状态中是否存在token
         if (userStore.token) {
             //为每个请求头添加Authorization, 携带Bearer token
-            config.headers['Authorization'] = 'Bearer' + userStore.token
+            config.headers['Authorization'] = 'Bearer ' + userStore.token
         }
         return config
     },
