@@ -23,6 +23,8 @@
 import {reactive, ref} from "vue";
 import router from "@/router/index.js";
 import {useUserStore} from "@/store/user.js";
+import userApi from '@/api/user.js'
+import authApi from '@/api/auth.js'
 
 const userStore = useUserStore()
 
@@ -50,21 +52,25 @@ const loading = ref(false)
 
 // 登录方法
 const handleLogin = () => {
-  loginFormRef.value?.validate((valid) => {
+  loginFormRef.value?.validate(async (valid) => {
     if (valid) {
       loading.value = true
       try {
-        userStore.login(loginForm.value)
-        router.push('/')
+        const res = await authApi.login(loginForm);
+        userStore.setToken(res.data.token)
+        //获取用户信息
+        const userInfoRes = await userApi.getCurrentUserInfo();
+        userStore.setUserInfo(userInfoRes.data)
+        await router.push('/')
       } catch (error) {
+        loading.value = false
         console.error('登录失败:', error)
       } finally {
         loading.value = false
       }
     }
   });
-};
-</script>
+};</script>
 
 <style scoped>
 /* 登录容器样式 */

@@ -63,6 +63,20 @@ public class UserController {
         return Result.error(ResultCode.USER_NOT_EXIST);
     }
 
+    //删除用户
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteUser(@PathVariable Long id) {
+        try {
+            Boolean success = userService.deleteById(id);
+            if (success) {
+                return Result.success("删除成功");
+            } else {
+                return Result.error("删除失败");
+            }
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
 
 
 }
