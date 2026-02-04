@@ -61,7 +61,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import userApi from '@/api/user'
-
+import {useRouter} from "vue-router";
+const router = useRouter()
 const loading = ref(false)
 const userList = ref([])
 
@@ -110,12 +111,12 @@ const handleReset = () => {
 
 // 新增用户
 const handleCreate = () => {
-  ElMessage.info('跳转到新增用户页面')
+  router.push('/users/create')
 }
 
 // 编辑用户
 const handleEdit = (row) => {
-  ElMessage.info(`编辑用户: ${row.username}`)
+  router.push(`/users/edit/${row.id}`)
 }
 
 // 删除用户

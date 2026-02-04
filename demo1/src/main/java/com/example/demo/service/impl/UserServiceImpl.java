@@ -46,6 +46,8 @@ public class UserServiceImpl implements UserService {
     //插入用户
     @Override
     public Boolean insert(User user) {
+        //加密密码
+        user.setPassword(PasswordEncoderUtil.encode(user.getPassword()));
         return userMapper.insert(user);
     }
     //更新用户

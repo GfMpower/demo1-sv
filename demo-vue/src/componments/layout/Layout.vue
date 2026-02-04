@@ -60,7 +60,7 @@
                             <!-- 用户头像 -->
                             <el-avatar :size="30" icon="el-icon-user"></el-avatar>
                           <!-- 用户名 -->
-                            <span class="username">管理员</span>
+                            <span class="username">{{ userStore.username }}</span>
                         </span>
             <!-- 下拉菜单选项 -->
             <template #dropdown>

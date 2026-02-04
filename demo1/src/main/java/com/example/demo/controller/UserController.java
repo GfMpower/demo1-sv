@@ -12,6 +12,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +73,47 @@ public class UserController {
                 return Result.success("删除成功");
             } else {
                 return Result.error("删除失败");
+            }
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    //创建用户
+    @PostMapping
+    public Result<User> createUser(@RequestBody User user) {
+        try {
+            //设置创建时间和更新时间
+            Date now = new Date();
+            user.setCreateTime(now);
+            user.setUpdateTime(now);
+            //默认状态为正常
+            if (user.getStatus() == null) {
+                user.setStatus(1);
+            }
+            Boolean success = userService.insert(user);
+            if (success) {
+                return Result.success(user);
+            } else {
+                return Result.error("创建用户失败");
+            }
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    //更新用户
+    @PutMapping
+    public Result<User> updateUser(@RequestBody User user) {
+        try {
+            //设置更新时间
+            Date now = new Date();
+            user.setUpdateTime(now);
+            Boolean success = userService.update(user);
+            if (success) {
+                return Result.success(user);
+            } else {
+                return Result.error("更新用户信息失败");
             }
         } catch (Exception e) {
             return Result.error(e.getMessage());
