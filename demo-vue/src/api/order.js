@@ -7,7 +7,7 @@ class OrderApi extends BaseApi {
 
     // 获取订单列表
     getOrderList(params) {
-        return this.get('', params)
+        return this.get('/page', params)
     }
 
     // 获取订单详情

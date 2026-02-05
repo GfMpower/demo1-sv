@@ -7,7 +7,7 @@ class ProductApi extends BaseApi {
 
     // 获取商品列表
     getProductList(params) {
-        return this.get('', params)
+        return this.get('/page', params)
     }
 
     // 获取商品详情
